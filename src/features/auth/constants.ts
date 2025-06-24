@@ -1,0 +1,1 @@
+export const AUTH_COOKIE = "jira_session_id";
