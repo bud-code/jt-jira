@@ -1,24 +1,19 @@
 "use client";
 
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
+
 import DottedSeparator from "@/components/dotted-separator";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import Link from "next/link";
-import { loginSchema } from "@/features/auth/schemas";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useLogin } from "@/features/auth/api/use-login";
+import { loginSchema } from "@/features/auth/schemas";
 
 const SignInCard = () => {
   const { mutate: login, isPending } = useLogin();
@@ -52,11 +47,7 @@ const SignInCard = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="Enter email address"
-                      {...field}
-                    />
+                    <Input type="email" placeholder="Enter email address" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -68,22 +59,13 @@ const SignInCard = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Enter password"
-                      {...field}
-                    />
+                    <Input type="password" placeholder="Enter password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full"
-              disabled={isPending}
-            >
+            <Button type="submit" size="lg" className="w-full" disabled={isPending}>
               Sign In
             </Button>
           </form>
@@ -93,21 +75,11 @@ const SignInCard = () => {
         <DottedSeparator />
       </div>
       <CardContent className="p-7 flex flex-col gap-y-4">
-        <Button
-          variant="secondary"
-          size="lg"
-          className="w-full"
-          disabled={isPending}
-        >
+        <Button variant="secondary" size="lg" className="w-full" disabled={isPending}>
           <FcGoogle className="mr-2 size-5" />
           Login with Google
         </Button>
-        <Button
-          variant="secondary"
-          size="lg"
-          className="w-full"
-          disabled={isPending}
-        >
+        <Button variant="secondary" size="lg" className="w-full" disabled={isPending}>
           <FaGithub className="mr-2 size-5" />
           Login with Github
         </Button>

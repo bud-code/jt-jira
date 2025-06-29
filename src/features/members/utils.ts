@@ -15,3 +15,7 @@ export const getMember = async ({ databases, workspaceId, userId }: GetMemberPro
 
   return members.documents[0];
 };
+
+export const snakeCaseToCamelCase = (str: string) => {
+  return str.replace(/_/g, " ");
+};

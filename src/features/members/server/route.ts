@@ -1,12 +1,13 @@
-import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
+import { Query } from "node-appwrite";
+
 import { sessionMiddleware } from "@/lib/session-middleware";
 import { createAdminClient } from "@/lib/appwrite";
-import { getMember } from "../utils";
 import { DATABASE_ID, MEMBERS_ID } from "@/config";
-import { Query } from "node-appwrite";
-import { MemberRole } from "../types";
+import { MemberRole } from "@/features/members/types";
+import { getMember } from "@/features/members/utils";
+import { zValidator } from "@hono/zod-validator";
 
 const app = new Hono()
   .get(
@@ -95,13 +96,9 @@ const app = new Hono()
 
       const memberToUpdate = await databases.getDocument(DATABASE_ID, MEMBERS_ID, memberId);
 
-      const allMembersInWorkspace = await databases.listDocuments(DATABASE_ID, MEMBERS_ID, [
-        Query.equal("workspaceId", memberToUpdate.$workspaceId),
-      ]);
-
       const member = await getMember({
         databases,
-        workspaceId: memberToUpdate.$workspaceId,
+        workspaceId: memberToUpdate.workspaceId,
         userId: user.$id,
       });
 
@@ -109,13 +106,13 @@ const app = new Hono()
         return c.json({ error: "Unauthorized" }, 401);
       }
 
-      if (member.$id !== memberToUpdate.$id && member.$role !== MemberRole.ADMIN) {
+      if (member.id !== memberToUpdate.id && member.role !== MemberRole.ADMIN) {
         return c.json({ error: "Unauthorized" }, 401);
       }
 
       await databases.updateDocument(DATABASE_ID, MEMBERS_ID, memberId, { role });
 
-      return c.json({ data: { $id: memberToUpdate.$id } });
+      return c.json({ data: { $id: memberToUpdate.id } });
     }
   );
 

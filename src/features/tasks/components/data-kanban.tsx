@@ -1,0 +1,88 @@
+"use client";
+
+import { useState } from "react";
+import { DragDropContext, Draggable, Droppable, DropResult } from "@hello-pangea/dnd";
+
+import { KanbanColumnHeader } from "@/features/tasks/components/kanban-column-header";
+import { Task, TaskStatus } from "@/features/tasks/types";
+import { KanbanCard } from "./kanban-card";
+
+interface DataKanbanProps {
+  data: Task[];
+}
+
+const boards: TaskStatus[] = [
+  TaskStatus.BACKLOG,
+  TaskStatus.TODO,
+  TaskStatus.IN_PROGRESS,
+  TaskStatus.IN_REVIEW,
+  TaskStatus.DONE,
+];
+
+type TasksState = {
+  [key in TaskStatus]: Task[];
+};
+
+export const DataKanban = ({ data }: DataKanbanProps) => {
+  const [tasks, setTasks] = useState<TasksState>(() => {
+    const initialTasks: TasksState = {
+      [TaskStatus.BACKLOG]: [],
+      [TaskStatus.TODO]: [],
+      [TaskStatus.IN_PROGRESS]: [],
+      [TaskStatus.IN_REVIEW]: [],
+      [TaskStatus.DONE]: [],
+    };
+
+    data.forEach((task) => {
+      initialTasks[task.status].push(task);
+    });
+
+    Object.keys(initialTasks).forEach((key) => {
+      initialTasks[key as TaskStatus].sort((a, b) => a.position - b.position);
+    });
+
+    return initialTasks;
+  });
+
+  const handleDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
+  };
+
+  return (
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <div className="flex overflow-x-auto">
+        {boards.map((board) => {
+          return (
+            <div key={board} className="flex-1 mx-2 bg-muted p-1.5 rounded-md min-w-[200px]">
+              <KanbanColumnHeader board={board} taskCount={tasks[board].length} />
+              <Droppable droppableId={board}>
+                {(provided) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="min-h-[200px] py-1.5"
+                  >
+                    {tasks[board].map((task, index) => (
+                      <Draggable key={task.$id} draggableId={task.$id} index={index}>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className="bg-white rounded-md p-2.5 shadow-sm"
+                          >
+                            <KanbanCard task={task} />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          );
+        })}
+      </div>
+    </DragDropContext>
+  );
+};
